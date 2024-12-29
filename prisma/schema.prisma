@@ -24,9 +24,11 @@ model User {
 model Url {
   id           Int      @id @default(autoincrement())
   originalUrl  String
-  shortenedUrl String?
-  active       Boolean?
-  accessCount  Int      @default(autoincrement())
+  shortenedUrl String? @unique
+  excluded       DateTime?
+  accessCount  Int      @default (0)
   author       User?    @relation(fields: [authorId], references: [id])
   authorId     Int?
+  created      DateTime @default(now())
+  updated      DateTime @default(now())
 }

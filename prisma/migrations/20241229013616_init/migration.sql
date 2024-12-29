@@ -13,9 +13,11 @@ CREATE TABLE "Url" (
     "id" SERIAL NOT NULL,
     "originalUrl" TEXT NOT NULL,
     "shortenedUrl" TEXT,
-    "active" BOOLEAN,
+    "excluded" TIMESTAMP(3),
     "accessCount" SERIAL NOT NULL,
     "authorId" INTEGER,
+    "created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Url_pkey" PRIMARY KEY ("id")
 );

@@ -1,27 +1,67 @@
 import { Injectable } from '@nestjs/common';
-import { LinkDTO } from './dto/links.dto';
+import { CreateLinkDTO } from './dto/links.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class LinksService {
   constructor(private prisma: PrismaService) {}
-  async getFullLink(code: string) {
-    return code;
+  async getOriginalLink(code: string) {
+    try {
+      const document = await this.prisma.url.findUnique({
+        where: { shortenedUrl: code },
+      });
+      if (document.excluded) return { message: '' };
+      const documentUpdate = await this.prisma.url.update({
+        where: { id: document.id },
+        data: { accessCount: document.accessCount + 1 },
+      });
+      return {
+        originalUrl: documentUpdate.originalUrl,
+        accessCount: documentUpdate.accessCount,
+      };
+    } catch {
+      return { message: 'Url Not Found' };
+    }
   }
 
-  async createLink(link: LinkDTO) {
-    const caracteres =
+  async createLink({ originalLink }: CreateLinkDTO) {
+    const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let codigo = '';
+    let urlShortenedCode = '';
     for (let i = 0; i < 6; i++) {
-      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
-      codigo += caracteres.charAt(indiceAleatorio);
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      urlShortenedCode += characters.charAt(randomIndex);
     }
-    const newUrl =
-      'https://3000-brenobcamp-urlshortener-bbop0itbbr3.ws-us117.gitpod.io/' +
-      codigo;
-    link.shortenedLink = newUrl;
-    link.accessCount = 0;
-    return link;
+    const search = await this.prisma.url.findUnique({
+      where: { shortenedUrl: urlShortenedCode },
+    });
+    if (!search) {
+      const document = await this.prisma.url.create({
+        data: {
+          originalUrl: originalLink,
+          shortenedUrl: urlShortenedCode,
+        },
+      });
+      return document;
+    } else {
+      this.createLink({ originalLink });
+    }
+  }
+  async getAllUrls() {
+    return await this.prisma.url.findMany();
+  }
+  async deleteUrlShortened(code: string) {
+    const documentUpdate = await this.prisma.url.update({
+      where: { shortenedUrl: code },
+      data: { excluded: new Date() },
+    });
+    if (documentUpdate) {
+      return { message: `Url with ${code} code excluded` };
+    } else {
+      return new Error('url not found');
+    }
+  }
+  async updateUrlShortened(body: any) {
+    return { message: 'update route' };
   }
 }
