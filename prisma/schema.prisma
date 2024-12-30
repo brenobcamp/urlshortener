@@ -16,19 +16,16 @@ datasource db {
 model User {
   id       Int     @id @default(autoincrement())
   email    String  @unique
-  name     String?
   password String
-  Url      Url[]
 }
 
 model Url {
   id           Int      @id @default(autoincrement())
   originalUrl  String
   shortenedUrl String? @unique
-  excluded       DateTime?
+  excludedAt       DateTime?
   accessCount  Int      @default (0)
-  author       User?    @relation(fields: [authorId], references: [id])
   authorId     Int?
-  created      DateTime @default(now())
-  updated      DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 }
