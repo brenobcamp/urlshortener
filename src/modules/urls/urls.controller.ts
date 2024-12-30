@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
   Request,
+  Redirect,
 } from '@nestjs/common';
 import { UrlsService } from './urls.service';
 import { UrlDTO } from './dto/urls.dto';
@@ -18,10 +19,17 @@ import { OptionalAuthGuard } from '../auth/auth.optional.guard';
 export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
   @Get('/:code')
-  async getOriginalUrl(@Param('code') code: string) {
-    return await this.urlsService.getOriginalUrl(code);
+  @Redirect()
+  async redirectToOriginalUrl(@Param('code') code: string) {
+    return { url: await this.urlsService.getOriginalUrl(code) };
   }
 
+  @Get('/urls/:code')
+  async getUrlDetails(@Param('code') code: string) {
+    return await this.urlsService.getOriginalUrlDetails(code);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('/urls/allurls')
   async getAllUrls() {
     return await this.urlsService.getAllUrls();
@@ -30,7 +38,7 @@ export class UrlsController {
   @UseGuards(AuthGuard)
   @Get('/urls/myurls')
   async getAllMyUrls(@Request() request) {
-    return await this.urlsService.getAllMyUrls(request.user.sub);
+    return await this.urlsService.getMyUrls(request.user.sub);
   }
 
   @UseGuards(OptionalAuthGuard)
@@ -40,8 +48,8 @@ export class UrlsController {
   }
   @UseGuards(AuthGuard)
   @Delete('/urls/delete/:code')
-  async deleteShortenedUrl(@Param('code') code: string) {
-    return await this.urlsService.deleteUrl(code);
+  async deleteShortenedUrl(@Param('code') code: string, @Request() request) {
+    return await this.urlsService.deleteUrl(code, request.user.sub);
   }
   @UseGuards(AuthGuard)
   @Put('/urls/update/:code')
@@ -50,6 +58,6 @@ export class UrlsController {
     @Param('code') code: string,
     @Request() request,
   ) {
-    return await this.urlsService.updateUrlShortened(body, code, request);
+    return await this.urlsService.updateUrl(body, code, request.user.sub);
   }
 }

@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       Int     @id @default(autoincrement()) @unique
   email    String  @unique
   password String
 }
@@ -22,7 +22,7 @@ model User {
 model Url {
   id           Int      @id @default(autoincrement())
   originalUrl  String
-  shortenedUrl String? @unique
+  shortenedUrl String @unique
   excludedAt       DateTime?
   accessCount  Int      @default (0)
   authorId     Int?

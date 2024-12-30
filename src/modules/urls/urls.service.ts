@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { UrlDTO } from './dto/urls.dto';
 
@@ -8,29 +12,46 @@ export class UrlsService {
   async getOriginalUrl(code: string) {
     try {
       const document = await this.prisma.url.findUnique({
-        where: { shortenedUrl: code },
+        where: { shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}` },
       });
-      if (document.excludedAt)
-        throw new BadRequestException(
-          `This url code was excluded at ${document.excludedAt}`,
-        );
-      const documentUpdate = await this.prisma.url.update({
+      const { originalUrl } = await this.prisma.url.update({
         where: { id: document.id },
         data: { accessCount: document.accessCount + 1 },
       });
-      return {
-        originalUrl: documentUpdate.originalUrl,
-        accessCount: documentUpdate.accessCount,
-      };
+      return originalUrl;
+    } catch {
+      throw new NotFoundException('Url Not Found');
+    }
+  }
+  async getOriginalUrlDetails(code: string) {
+    try {
+      const document = await this.prisma.url.findUnique({
+        where: { shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}` },
+      });
+      return document;
     } catch {
       throw new NotFoundException('Url Not Found');
     }
   }
 
-  async getAllMyUrls(authorId: number) {
-    return await this.prisma.url.findMany({
-      where: { authorId: authorId },
+  async getMyUrls(authorId: number) {
+    const documents = await this.prisma.url.findMany({
+      where: { authorId: authorId, excludedAt: null },
     });
+    documents.forEach((url) => {
+      delete url.id;
+      delete url.authorId;
+      delete url.excludedAt;
+    });
+    return documents;
+  }
+
+  async getAllUrls() {
+    try {
+      return await this.prisma.url.findMany();
+    } catch {
+      throw new NotFoundException();
+    }
   }
 
   async createShortUrl(url: string, request) {
@@ -41,14 +62,15 @@ export class UrlsService {
       const randomIndex = Math.floor(Math.random() * characters.length);
       urlShortenedCode += characters.charAt(randomIndex);
     }
+    const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlShortenedCode}`;
     const search = await this.prisma.url.findUnique({
-      where: { shortenedUrl: urlShortenedCode },
+      where: { shortenedUrl: shortenedUrl },
     });
     if (!search) {
       const document = await this.prisma.url.create({
         data: {
           originalUrl: url,
-          shortenedUrl: urlShortenedCode,
+          shortenedUrl: shortenedUrl,
           authorId: request?.user?.sub ?? null,
         },
       });
@@ -58,28 +80,12 @@ export class UrlsService {
     }
   }
 
-  async getAllUrls() {
-    return await this.prisma.url.findMany();
-  }
-  async deleteUrl(code: string) {
-    try {
-      const documentUpdate = await this.prisma.url.update({
-        where: { shortenedUrl: code, excludedAt: null },
-        data: { excludedAt: new Date() },
-      });
-      if (documentUpdate) {
-        return { message: `Url with ${code} code excluded` };
-      }
-    } catch {
-      throw new BadRequestException('Url not found or already excluded');
-    }
-  }
-  async updateUrlShortened(body: UrlDTO, code: string, request) {
+  async updateUrl(body: UrlDTO, code: string, authorId: number) {
     try {
       const documentUpdate = await this.prisma.url.update({
         where: {
-          shortenedUrl: code,
-          authorId: request.user.sub,
+          shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}`,
+          authorId: authorId,
           excludedAt: null,
         },
         data: { originalUrl: body.url, updatedAt: new Date() },
@@ -89,6 +95,24 @@ export class UrlsService {
       }
     } catch {
       throw new BadRequestException('Url not found');
+    }
+  }
+
+  async deleteUrl(code: string, authorId: number) {
+    try {
+      const documentUpdate = await this.prisma.url.update({
+        where: {
+          shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}`,
+          authorId: authorId,
+          excludedAt: null,
+        },
+        data: { excludedAt: new Date() },
+      });
+      if (documentUpdate) {
+        return { message: `Url with ${code} code excluded` };
+      }
+    } catch {
+      throw new BadRequestException('Url not found or already excluded');
     }
   }
 }
