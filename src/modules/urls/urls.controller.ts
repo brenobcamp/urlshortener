@@ -24,9 +24,10 @@ export class UrlsController {
     return { url: await this.urlsService.getOriginalUrl(code) };
   }
 
-  @Get('/urls/:code')
-  async getUrlDetails(@Param('code') code: string) {
-    return await this.urlsService.getOriginalUrlDetails(code);
+  @UseGuards(AuthGuard)
+  @Get('/urls/details/:code')
+  async getUrlDetails(@Param('code') code: string, @Request() request) {
+    return await this.urlsService.getOriginalUrlDetails(code, request.user.sub);
   }
 
   @UseGuards(AuthGuard)

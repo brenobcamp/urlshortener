@@ -23,11 +23,18 @@ export class UrlsService {
       throw new NotFoundException('Url Not Found');
     }
   }
-  async getOriginalUrlDetails(code: string) {
+
+  async getOriginalUrlDetails(code: string, authorId: number) {
     try {
       const document = await this.prisma.url.findUnique({
-        where: { shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}` },
+        where: {
+          shortenedUrl: `${process.env.SERVER_ADDRESS}/${code}`,
+          authorId: authorId,
+        },
       });
+      if (!document) {
+        throw new NotFoundException('Url Not Found');
+      }
       return document;
     } catch {
       throw new NotFoundException('Url Not Found');
@@ -48,6 +55,8 @@ export class UrlsService {
 
   async getAllUrls() {
     try {
+      const docs = await this.prisma.url.findMany();
+      console.log(docs);
       return await this.prisma.url.findMany();
     } catch {
       throw new NotFoundException();
