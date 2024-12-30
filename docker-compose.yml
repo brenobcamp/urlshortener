@@ -20,8 +20,8 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=postgresql://docker:docker@db:5432/url-shortener
-      - JWT_SECRET="jwtsecret"
-      - SERVER_ADDRESS="https://localhost:8080"
+      - JWT_SECRET=3e914f5ed025e175bd236f9a027939ad26d824ad7bb86fc466e2a205db79a424
+      - SERVER_ADDRESS=https://localhost:3000
     command: sh -c "npx prisma migrate dev && npm run start:dev"
 volumes:
   db_data:

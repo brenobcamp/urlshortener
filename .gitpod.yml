@@ -1,7 +1,0 @@
-image:
-  file: .gitpod.Dockerfile
-
-tasks:
-  - init: sudo service postgresql start
-    command: >
-      pg_ctl status || pg_ctl start

@@ -21,44 +21,82 @@ export class UrlsController {
   @Get('/:code')
   @Redirect()
   async redirectToOriginalUrl(@Param('code') code: string) {
-    return { url: await this.urlsService.getOriginalUrl(code) };
+    try {
+      const url = await this.urlsService.getOriginalUrl(code);
+      return { url };
+    } catch {
+      throw new Error('Error redirecting to original URL');
+    }
   }
 
   @UseGuards(AuthGuard)
   @Get('/urls/details/:code')
   async getUrlDetails(@Param('code') code: string, @Request() request) {
-    return await this.urlsService.getOriginalUrlDetails(code, request.user.sub);
+    try {
+      return await this.urlsService.getOriginalUrlDetails(
+        code,
+        request.user.sub,
+      );
+    } catch {
+      throw new Error('Error fetching URL details');
+    }
   }
 
   @UseGuards(AuthGuard)
   @Get('/urls/allurls')
   async getAllUrls() {
-    return await this.urlsService.getAllUrls();
+    try {
+      return await this.urlsService.getAllUrls();
+    } catch {
+      throw new Error('Error fetching all URLs');
+    }
   }
 
   @UseGuards(AuthGuard)
   @Get('/urls/myurls')
   async getAllMyUrls(@Request() request) {
-    return await this.urlsService.getMyUrls(request.user.sub);
+    try {
+      return await this.urlsService.getMyUrls(request.user.sub);
+    } catch {
+      throw new Error('Error fetching user URLs');
+    }
   }
 
   @UseGuards(OptionalAuthGuard)
   @Post('/urls/create')
   async createShortUrl(@Body() body: UrlDTO, @Request() request) {
-    return await this.urlsService.createShortUrl(body.url, request);
+    try {
+      return await this.urlsService.createShortUrl(body.url, request);
+    } catch {
+      throw new Error('Error creating short URL');
+    }
   }
+
   @UseGuards(AuthGuard)
   @Delete('/urls/delete/:code')
   async deleteShortenedUrl(@Param('code') code: string, @Request() request) {
-    return await this.urlsService.deleteUrl(code, request.user.sub);
+    try {
+      return await this.urlsService.deleteUrl(code, request.user.sub);
+    } catch {
+      throw new Error('Error deleting short URL');
+    }
   }
+
   @UseGuards(AuthGuard)
   @Put('/urls/update/:code')
   async updateUrlShortened(
-    @Body() body: any,
-    @Param('code') code: string,
+    @Body() body: UrlDTO,
+    @Param('code') urlCode: string,
     @Request() request,
   ) {
-    return await this.urlsService.updateUrl(body, code, request.user.sub);
+    try {
+      return await this.urlsService.updateUrl(
+        body.url,
+        urlCode,
+        request.user.sub,
+      );
+    } catch {
+      throw new Error('Error updating short URL');
+    }
   }
 }

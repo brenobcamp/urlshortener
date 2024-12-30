@@ -14,7 +14,7 @@ export class OptionalAuthGuard implements CanActivate {
       try {
         const decoded = this.jwtService.verify(token);
         request.user = decoded;
-      } catch (err) {
+      } catch {
         return false;
       }
     }
