@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  db:
+    image: bitnami/postgresql:latest
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: url-shortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/bitnami/postgresql
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://docker:docker@db:5432/url-shortener
+      - JWT_SECRET="jwtsecret"
+      - SERVER_ADDRESS="https://localhost:8080"
+    command: sh -c "npx prisma migrate dev && npm run start:dev"
+volumes:
+  db_data:
