@@ -25,7 +25,9 @@ Atualização e Exclusão: Permite atualizar ou excluir URLs curtas criadas pelo
 Docker e Node.js instalados
 ### Passos
 
-Clone o repositório: ```bash git clone https://github.com/seu-usuario/url-shortener.git cd url-shortener ```<br>
+Clone o repositório: ```bash git clone https://github.com/seu-usuario/url-shortener.git```<br>
+
+Entre na pasta do projeto ```cd url-shortener ```<br>
 
 Suba os containers com Docker Compose: ```bash docker-compose up -d ```
 
