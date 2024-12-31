@@ -17,7 +17,7 @@ Redirecionamento: Redireciona automaticamente para a URL original quando a URL c
 Autenticação e Autorização: Utiliza guardas de autenticação para proteger rotas sensíveis.
 Listagem de URLs: Permite listar todas as URLs criadas pelo usuário autenticado.
 Detalhes da URL: Fornece detalhes específicos de uma URL encurtada.
-Atualização e Exclusão: Permite atualizar ou excluir URLs curtas criadas pelo usuário.
+Atualização e Exclusão: Permite atualizar ou excluir URLs curtas criadas pelo usuário autenticado.
 ## Como Executar
 
 ### Pré-requisitos
@@ -28,15 +28,7 @@ Node.js e npm instalados
 
 Clone o repositório: ```bash git clone https://github.com/seu-usuario/url-shortener.git cd url-shortener ```
 
-Configure as variáveis de ambiente: Crie um arquivo .env na raiz do projeto e adicione as variáveis necessárias, como as credenciais do banco de dados.
-
 Suba os containers com Docker Compose: ```bash docker-compose up -d ```
-
-Instale as dependências: ```bash npm install ```
-
-Execute as migrações do Prisma: ```bash npx prisma migrate dev ```
-
-Inicie a aplicação: ```bash npm run start:dev ```
 
 ## Documentação da API
 
