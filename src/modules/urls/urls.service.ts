@@ -9,8 +9,8 @@ import { PrismaService } from 'src/database/prisma.service';
 export class UrlsService {
   constructor(private prisma: PrismaService) {}
   async getOriginalUrl(urlCode: string) {
-    const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
     try {
+      const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
       const document = await this.prisma.url.findUnique({
         where: { shortenedUrl },
       });
@@ -30,26 +30,6 @@ export class UrlsService {
     }
   }
 
-  async getOriginalUrlDetails(urlCode: string, authorId: number) {
-    try {
-      const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
-      const document = await this.prisma.url.findUnique({
-        where: {
-          shortenedUrl,
-          authorId,
-        },
-      });
-
-      if (!document) {
-        throw new NotFoundException('Url Not Found');
-      }
-
-      return document;
-    } catch {
-      throw new NotFoundException('Url Not Found');
-    }
-  }
-
   async getMyUrls(authorId: number) {
     try {
       const documents = await this.prisma.url.findMany({
@@ -63,7 +43,8 @@ export class UrlsService {
 
   async getAllUrls() {
     try {
-      return await this.prisma.url.findMany();
+      const urls = await this.prisma.url.findMany();
+      return { urls };
     } catch {
       throw new NotFoundException('It was not possible to find created Urls');
     }
@@ -105,9 +86,29 @@ export class UrlsService {
     }
   }
 
-  async updateUrl(newUrl: string, urlCode: string, authorId: number) {
-    const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
+  async getUrlDetails(urlCode: string, authorId: number) {
     try {
+      const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
+      const document = await this.prisma.url.findUnique({
+        where: {
+          shortenedUrl,
+          authorId,
+        },
+      });
+
+      if (!document) {
+        throw new NotFoundException('Url Not Found');
+      }
+
+      return document;
+    } catch {
+      throw new NotFoundException('Url Not Found');
+    }
+  }
+
+  async updateUrl(newUrl: string, urlCode: string, authorId: number) {
+    try {
+      const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
       const documentUpdate = await this.prisma.url.update({
         where: {
           shortenedUrl,
@@ -117,7 +118,12 @@ export class UrlsService {
         data: { originalUrl: newUrl, updatedAt: new Date() },
       });
       if (documentUpdate) {
-        return { message: `Url with code ${urlCode} updated.` };
+        return {
+          statusCode: 200,
+          message: `Url with code ${urlCode} updated.`,
+        };
+      } else {
+        throw new BadRequestException('Url Not Found');
       }
     } catch {
       throw new Error('Could not update URL');
@@ -125,8 +131,8 @@ export class UrlsService {
   }
 
   async deleteUrl(urlCode: string, authorId: number) {
-    const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
     try {
+      const shortenedUrl = `${process.env.SERVER_ADDRESS}/${urlCode}`;
       const documentUpdate = await this.prisma.url.update({
         where: {
           shortenedUrl,
@@ -136,7 +142,10 @@ export class UrlsService {
         data: { excludedAt: new Date() },
       });
       if (documentUpdate) {
-        return { message: `Url with code ${urlCode} excluded` };
+        return {
+          statusCode: 200,
+          message: `Url with code ${urlCode} deleted`,
+        };
       }
     } catch {
       throw new BadRequestException('Url not found or already excluded');

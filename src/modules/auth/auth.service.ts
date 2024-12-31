@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { UserDTO } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -13,7 +17,7 @@ export class AuthService {
   async signIn(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
     if (user?.password !== pass) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid password or email');
     }
     const payload = { sub: user.id, username: user.email };
     return {
@@ -22,7 +26,11 @@ export class AuthService {
   }
 
   async createUser(userData: UserDTO) {
-    const user = await this.usersService.createOne(userData);
-    return user;
+    try {
+      await this.usersService.createOne(userData);
+      return { message: 'User created', statusCode: 200 };
+    } catch {
+      throw new BadRequestException('Email already registered');
+    }
   }
 }
