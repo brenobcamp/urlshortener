@@ -29,7 +29,7 @@ Clone o repositório: ```bash git clone https://github.com/brenobcamp/urlshorten
 
 Entre na pasta do projeto ```cd urlshortener ```<br>
 
-Suba os containers com Docker Compose: ```bash docker-compose up -d ```
+Suba os containers com Docker Compose: ```bash docker compose up -d ```
 
 ## Documentação da API
 
