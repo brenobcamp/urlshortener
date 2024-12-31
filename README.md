@@ -6,27 +6,26 @@ Este projeto é um encurtador de URLs desenvolvido com NestJS, utilizando Postgr
 
 ## Tecnologias Utilizadas
 
-NestJS: Um framework para a construção de aplicações Node.js escaláveis e eficientes.
-PostgreSQL: Um sistema de gerenciamento de banco de dados relacional avançado e open-source.
-Prisma: Um ORM moderno que facilita o acesso ao banco de dados com segurança e eficiência.
-Docker: Uma plataforma para desenvolvimento, envio e execução de aplicações em containers.
+NestJS: Um framework para a construção de aplicações Node.js escaláveis e eficientes.<br>
+PostgreSQL: Um sistema de gerenciamento de banco de dados relacional avançado e open-source.<br>
+Prisma: Um ORM moderno que facilita o acesso ao banco de dados com segurança e eficiência.<br>
+Docker: Uma plataforma para desenvolvimento, envio e execução de aplicações em containers.<br>
 ## Funcionalidades
 
-Criação de URLs Curtas: Permite criar URLs curtas a partir de URLs longas.
-Redirecionamento: Redireciona automaticamente para a URL original quando a URL curta é acessada.
-Autenticação e Autorização: Utiliza guardas de autenticação para proteger rotas sensíveis.
-Listagem de URLs: Permite listar todas as URLs criadas pelo usuário autenticado.
-Detalhes da URL: Fornece detalhes específicos de uma URL encurtada.
-Atualização e Exclusão: Permite atualizar ou excluir URLs curtas criadas pelo usuário autenticado.
+Criação de URLs Curtas: Permite criar URLs curtas a partir de URLs longas.<br>
+Redirecionamento: Redireciona automaticamente para a URL original quando a URL curta é acessada.<br>
+Autenticação e Autorização: Utiliza guardas de autenticação para proteger rotas sensíveis.<br>
+Listagem de URLs: Permite listar todas as URLs criadas pelo usuário autenticado.<br>
+Detalhes da URL: Fornece detalhes específicos de uma URL encurtada.<br>
+Atualização e Exclusão: Permite atualizar ou excluir URLs curtas criadas pelo usuário autenticado.<br>
 ## Como Executar
 
 ### Pré-requisitos
 
-Docker e Docker Compose instalados
-Node.js e npm instalados
+Docker e Node.js instalados
 ### Passos
 
-Clone o repositório: ```bash git clone https://github.com/seu-usuario/url-shortener.git cd url-shortener ```
+Clone o repositório: ```bash git clone https://github.com/seu-usuario/url-shortener.git cd url-shortener ```<br>
 
 Suba os containers com Docker Compose: ```bash docker-compose up -d ```
 
