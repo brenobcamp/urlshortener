@@ -10,6 +10,7 @@ NestJS: Um framework para a construção de aplicações Node.js escaláveis e e
 PostgreSQL: Um sistema de gerenciamento de banco de dados relacional avançado e open-source.<br>
 Prisma: Um ORM moderno que facilita o acesso ao banco de dados com segurança e eficiência.<br>
 Docker: Uma plataforma para desenvolvimento, envio e execução de aplicações em containers.<br>
+Swagger: Ferramenta para documentação de APIs, facilitando a visualização e interação com os endpoints.<br>
 ## Funcionalidades
 
 Criação de URLs Curtas: Permite criar URLs curtas a partir de URLs longas.<br>
